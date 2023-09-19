@@ -1,0 +1,47 @@
+
+BUSCA
+t0 -->  REM <-- PC
+t1 -->  RDM <-- MEM[REM]
+t2 -->  RI <-- RDM; PC <-- PC+1
+
+
+LDA
+t3  --> REM <-- PC
+t4  --> RDM <-- MEM[REM]
+t5  --> REM <-- RDM
+t6  --> RDM <-- MEM[REM]
+t7  --> AC <-- RDM
+
+ADD
+t3  --> REM <-- PC
+t4  --> RDM <-- MEM[REM]
+t5  --> REM <-- RDM
+t6  --> RDM <-- MEM[REM]
+t7  --> AC <-- AC + RDM
+
+
+
+
+VISUALIZER:
+0 --> REM
+1 --> RDM
+2 --> RI
+3 --> PC
+4 --> AC
+5 --> sinais de controle
+
+
+
+
+PROGRAMA:
+iLDA, X"0E",   -- carrega o acumulador com a constante na penultima posicao da ROM
+iADD, X"0F",   -- soma o acumulador com a constante na ultima posicao da ROM
+iAND, X"0D",   -- faz a operacao end do resultado com o acumulador 
+iOR,  X"0C",   -- faz a operacao or do acumulador com F0
+iJMP, X"02",   -- volta para instrucao iADD (segunda instrucao) num loop infinito
+iNOP, 
+iNOP,
+X"F0",	-- constante para opera��o OR
+X"0F",	-- constante para opera��o AND
+X"03",	-- constante 3,
+X"02"  

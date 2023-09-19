@@ -1,0 +1,93 @@
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity control_unit is
+	port (
+	instr_STA: in std_logic ;
+	instr_LDA: in std_logic ;
+	instr_ADD: in std_logic ;
+	instr_AND: in std_logic ;
+	instr_NOP: in std_logic ;
+	instr_OR: in std_logic ; 
+	instr_NOT: in std_logic ;
+	instr_JMP: in std_logic ;
+	instr_JN: in std_logic ;
+	instr_JZ: in std_logic ;
+	N   : in std_logic ;
+	Z   : in std_logic ;
+	t   : in std_logic_vector (7 downto 0);
+	incrementa_PC: out std_logic ;
+	sel : out std_logic ;
+	carga_REM: out std_logic ;
+	carga_RI: out std_logic ;
+	carga_RDM: out std_logic ;
+	carga_AC: out std_logic ;
+	carga_NZ: out std_logic ;
+	carga_PC: out std_logic ;
+	Read : out std_logic ;
+	Write: out std_logic ;
+	UAL: out std_logic_vector (4 downto 0);
+	goto_t0: out std_logic 	
+	);
+end entity;
+
+
+architecture control_unit of control_unit is
+begin
+carga_REM <= t(0) 
+                  or 
+             (t(3) and (instr_STA or instr_LDA or instr_ADD or instr_OR or instr_AND or instr_JMP or (instr_JN and N) or (instr_JZ and Z))) 
+				  or					  
+			 (t(5) and (instr_STA or instr_LDA or instr_ADD or instr_OR or instr_AND));
+				
+
+carga_RDM <= t(1) 
+              or
+			  (t(4) and (instr_STA or instr_LDA or instr_ADD or instr_OR or instr_AND or instr_JMP)) 
+			   or 
+			  (t(6) and (instr_STA or instr_LDA or instr_ADD or instr_OR or instr_AND));
+            
+
+			 
+incrementa_PC <= t(1) 
+                  or 
+                (t(4) and (instr_STA or instr_LDA or instr_ADD or instr_OR or instr_AND))
+				or
+                (t(3) and ((instr_JN and (not N)) or  (instr_JZ and (not Z))));
+carga_RI <= t(2);
+
+sel <= (t(4) or t(5)) and (instr_STA or instr_LDA or instr_ADD or instr_OR or instr_AND);
+
+Read <= t(1) or 
+        (t(4) and (instr_STA or instr_LDA or instr_ADD or instr_OR or instr_AND or 
+		instr_JMP or (instr_JN and N) or (instr_JZ and Z)))
+		 or 
+        (t(6) and (instr_LDA or instr_ADD or instr_OR or instr_AND));
+
+Write <= t(7) and instr_STA;
+
+
+
+carga_AC <= (t(7) and (instr_LDA or instr_ADD or instr_OR or instr_AND))
+             or
+            (t(3) and instr_NOT);  
+			
+carga_NZ <= (t(7) and (instr_LDA or instr_ADD or instr_OR or instr_AND))
+             or
+            (t(3) and instr_NOT);
+
+carga_PC <= t(5) and (instr_JMP or (instr_JN and N) or (instr_JZ and Z));
+
+goto_t0 <=  (t(3)and instr_NOP) or
+            (t(4) and (instr_NOT or (instr_JN and not N) or ( instr_JZ and not Z))) or
+            (t(6) and (instr_JMP or (instr_JN and N) or (instr_JZ and Z))) ; 
+		   
+
+UAL(0) <= instr_LDA ;
+UAL(1) <= instr_AND ;
+UAL(2) <= instr_OR ;
+UAL(3) <= instr_ADD ; 
+UAL(4) <= instr_NOT ; 
+
+
+end control_unit;
